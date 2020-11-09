@@ -32,10 +32,8 @@ bool SystemController::init(Mode::Mode *initialMode)
         return false;
 
 #ifndef UNIT_TEST
-    //Initialise serial out to console
-    Serial.begin(115200);
 
-    // Test to see if everything's working correctly
+    // Everything's working correctly
     Serial.println("System controller is alive!");
 #endif
 

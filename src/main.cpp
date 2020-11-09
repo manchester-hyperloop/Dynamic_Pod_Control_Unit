@@ -8,14 +8,18 @@
 
 #ifndef UNIT_TEST
 #include <Arduino.h>
+#include "Core/SystemController.hpp"
+#include "Core/Mode/"
+
+Core::SystemController &ctrl = SystemController::getSysCtrlInstance();
 
 void setup()
 {
-  // put your setup code here, to run once:
+  Serial.begin(115200);
+  ctrl.init(Mode::);
 }
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
 }
-#endif
+#endif /* ifndef UNIT_TEST */
