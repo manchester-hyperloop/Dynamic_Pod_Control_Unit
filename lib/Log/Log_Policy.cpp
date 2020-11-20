@@ -19,8 +19,10 @@ void file_log_policy::open_ostream(const String &file_name)
 
     String dir_name = "Logs";
     sd.mkdir(dir_name.c_str());
-    String const logPath = dir_name + "/" + file_name;
+    // String const logPath = dir_name + "/" + file_name;
 
+    // REMOVE THIS LATER!
+    String const logPath = "12345678.log";
     log_file = sd.open(logPath, FILE_WRITE);
     if (!log_file)
     {
@@ -40,10 +42,11 @@ void file_log_policy::close_ostream()
 
 void file_log_policy::write(const String &msg)
 {
-    log_file.print(msg);
+    log_file.println(msg);
 #ifdef LOG_TO_SERIAL
     Serial.println(msg);
 #endif
+    log_file.flush();
 }
 
 file_log_policy::~file_log_policy()

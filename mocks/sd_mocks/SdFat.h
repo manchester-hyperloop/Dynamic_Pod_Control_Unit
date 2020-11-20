@@ -33,6 +33,20 @@ struct File
     {
         lastMessage = message;
     }
+
+    void println(std::string message)
+    {
+        lastMessage = message + "\n";
+    }
+
+    void flush()
+    {
+    }
+
+    std::string &getLastMessage()
+    {
+        return lastMessage;
+    }
 };
 
 class SdFat

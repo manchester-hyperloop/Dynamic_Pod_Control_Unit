@@ -10,8 +10,6 @@
 
 #include "Log_Policy_Interface.h"
 
-#define LOG_TO_SERIAL
-
 #ifndef UNIT_TEST
 #include <Arduino.h>
 #include <SdFat.h>
