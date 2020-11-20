@@ -6,6 +6,9 @@
 //  Copyright © 2020 Hyperloop Manchester. All rights reserved.
 //
 
+#ifndef mocks_Mode_Mode_Test_Mock_hpp
+#define mocks_Mode_Mode_Test_Mock_hpp
+
 #include "Core/Mode/Mode.hpp"
 #include "Core/SystemController.hpp"
 
@@ -77,3 +80,5 @@ namespace Core
         };
     } // namespace Mode
 } // namespace Core
+
+#endif /* mocks_Mode_Mode_Test_Mock_hpp */

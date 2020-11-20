@@ -1,0 +1,3 @@
+[submodule "Hardware_Mocks"]
+	path = mocks
+	url = https://github.com/manchester-hyperloop/Hardware_Mocks.git
