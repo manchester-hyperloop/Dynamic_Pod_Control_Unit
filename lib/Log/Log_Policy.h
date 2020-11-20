@@ -30,9 +30,12 @@ class file_log_policy : public log_policy_interface
 	// Log file.
 	File log_file;
 
+	// CS Pin
+	uint8_t const CS_Pin = 10;
+
 public:
 	file_log_policy() {}
-	void open_ostream(const String &file_name);
+	bool open_ostream(const String &file_name);
 	void close_ostream();
 	void write(const String &msg);
 	~file_log_policy();

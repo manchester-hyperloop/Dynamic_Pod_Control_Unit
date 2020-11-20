@@ -14,10 +14,17 @@
 #define FILE_WRITE 0
 
 // Log file.
-struct File
+class File
 {
-    bool file_is_open = true;
+
+public:
+    inline static bool file_is_open;
     std::string lastMessage = "";
+
+    static void setup_mock()
+    {
+        file_is_open = true;
+    }
 
     void close()
     {
@@ -57,11 +64,18 @@ class SdFat
     int fileArgs = -1;
 
 public:
+    inline static bool canInitialise;
+
+    static void setup_mock()
+    {
+        canInitialise = true;
+    }
+
     bool begin(uint8_t _cs_pin)
     {
         cs_pin = _cs_pin;
 
-        return true;
+        return canInitialise;
     }
 
     void mkdir(std::string directory_name)

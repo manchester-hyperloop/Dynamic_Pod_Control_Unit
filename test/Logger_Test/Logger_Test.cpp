@@ -16,7 +16,9 @@
 #include "../../mocks/rtc_mocks/RTC_Lib_Mock.hpp"
 #include "../../mocks/Arduino/Fake_Duino.hpp"
 
-// Helper
+/****************************************************************************************************/
+/*                                             HELPERS                                              */
+/****************************************************************************************************/
 // Get the log policy from the log instance
 File &getLogFileMock()
 {
@@ -31,10 +33,9 @@ std::string getLastLoggedMessage()
     return getLogFileMock().getLastMessage();
 }
 
-// Logger should fail to write message if not initialised
-void test_logger_non_functional_if_no_init(void)
-{
-}
+/****************************************************************************************************/
+/*                                               TESTS                                              */
+/****************************************************************************************************/
 
 void test_message_index_starts_at_0(void)
 {
@@ -85,7 +86,7 @@ void test_logger_takes_variadic_args(void)
 
     std::string compiledMessage = message1 + patch::to_string(test_val) + message2 + patch::to_string(test_bool);
 
-    TEST_ASSERT(getLastLoggedMessage().find(compiledMessage) != -1);
+    TEST_ASSERT(getLastLoggedMessage().find(compiledMessage) != std::string::npos);
 }
 
 // logger should print time with each message
@@ -98,7 +99,7 @@ void test_logger_prints_time(void)
     RTC_DS1307 rtc_mock;
     std::string timeNow = rtc_mock.now().timestamp(DateTime::timestampOpt::TIMESTAMP_TIME);
 
-    TEST_ASSERT(getLastLoggedMessage().find(timeNow) != -1);
+    TEST_ASSERT(getLastLoggedMessage().find(timeNow) != std::string::npos);
 }
 
 // logger should print either, INFO, ERROR, or WARNING with each message depending on severity
@@ -115,26 +116,68 @@ void test_logger_prints_severity(void)
     TEST_ASSERT(getLastLoggedMessage().find("ERROR") != std::string::npos);
 }
 
+// Logger should be able to reset itself
+void test_logger_may_reset(void)
+{
+    // Check that policy is still alive
+    TEST_ASSERT(log_inst.getActiveLogPolicy() != nullptr);
+
+    // reset
+    log_inst.reset();
+
+    // policy should now be null
+    TEST_ASSERT(log_inst.getActiveLogPolicy() == nullptr);
+}
+
 // Logger should fail to start and return false if unable to initialise SD card hardware
 void test_logger_fails_on_sd_failure(void)
 {
+    // Reset the log and force the sd card to not initialise properly
+    log_inst.reset();
+    SdFat::canInitialise = false;
+
+    // Test that the init function fails
+    TEST_ASSERT_FALSE(log_inst.init());
+
+    // Restore the sd card mock to it's normal state
+    SdFat::canInitialise = true;
 }
 
 // Logger should fail to start and return false if unable to open an output stream
 void test_logger_fails_on_output_failure(void)
 {
+    // Reset the log and force the file to not open properly
+    log_inst.reset();
+    File::file_is_open = false;
+
+    // Test that the init function fails
+    TEST_ASSERT_FALSE(log_inst.init());
+
+    // Restore the file mock to it's normal state
+    File::file_is_open = true;
 }
 
 // Logger should fail to start and return fals if unable to start real-time clock (RTC)
 void test_logger_fails_on_rtc_failure(void)
 {
+    // Reset the log and force the real-time clock to not initialise properly
+    log_inst.reset();
+    RTC_DS1307::canInitialise = false;
+
+    // Test that the init function fails
+    TEST_ASSERT_FALSE(log_inst.init());
+
+    // Restore the rtc mock to it's normal state
+    RTC_DS1307::canInitialise = true;
 }
 
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
 
-    // RUN_TEST(test_logger_non_functional_if_no_init);
+    File::setup_mock();
+    SdFat::setup_mock();
+    RTC_DS1307::setup_mock();
 
     log_inst.init();
 

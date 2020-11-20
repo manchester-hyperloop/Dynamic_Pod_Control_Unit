@@ -7,29 +7,27 @@
 
 #include "Log_Policy.h"
 
-// TODO: Return boolean
-void file_log_policy::open_ostream(const String &file_name)
+bool file_log_policy::open_ostream(const String &file_name)
 {
-    if (!sd.begin(10))
+    if (!sd.begin(CS_Pin))
     {
-        // TODO: Create critical error!
         Serial.println(F("LOGGER: Unable to initialise SD card..."));
-        return;
+        return false;
     }
 
     String dir_name = "Logs";
     sd.mkdir(dir_name.c_str());
-    // String const logPath = dir_name + "/" + file_name;
 
-    // REMOVE THIS LATER!
-    String const logPath = "12345678.log";
+    String const logPath = dir_name + "/" + "12345678.log"; //file_name;
+
     log_file = sd.open(logPath, FILE_WRITE);
     if (!log_file)
     {
-        // TODO: Create critical error!
         Serial.println(F("Logger: Unable to open an output stream!"));
-        return;
+        return false;
     }
+
+    return true;
 }
 
 void file_log_policy::close_ostream()

@@ -29,6 +29,8 @@ class logger
 
     RTC_DS1307 rtc;
 
+    bool initialised = false;
+
 public:
     /**
 	 * Dissalow construction from another instance; Singleton class
@@ -43,13 +45,21 @@ public:
     static logger &getLoggerInstance();
     ~logger();
 
-    void init();
+    bool init();
 
     template <severity_type severity, typename... Args>
     void print(Args... args);
 
     unsigned int getLastMessageIndex() const;
     file_log_policy *getActiveLogPolicy() const;
+
+    void reset()
+    {
+        Serial.println(F("WARNING: Resetting Logger!"));
+        initialised = false;
+        delete policy;
+        policy = nullptr;
+    }
 
 private:
     logger() {}
@@ -67,22 +77,27 @@ private:
 };
 
 template <typename log_policy>
-void logger<log_policy>::init()
+bool logger<log_policy>::init()
 {
     if (!rtc.begin())
     {
-        // TODO: Create critical error!
         Serial.println("Couldn't find RTC...");
+        return false;
+    }
+
+    policy = new log_policy;
+
+    // Check that policy was created successfully (not nullptr)
+    if (!policy)
+    {
+        Serial.println(F("LOGGER: Unable to create the logger instance"));
+        return false;
     }
 
     String name = generateLogName();
-    policy = new log_policy;
-    if (!policy)
-    {
-        // TODO: Create critical error!
-        Serial.println(F("LOGGER: Unable to create the logger instance"));
-    }
-    policy->open_ostream(name);
+    initialised = policy->open_ostream(name);
+
+    return initialised;
 }
 
 template <typename log_policy>
@@ -106,6 +121,10 @@ template <typename log_policy>
 template <severity_type severity, typename... Args>
 void logger<log_policy>::print(Args... args)
 {
+    // Return if not initialised (prevents crash later when accessing policy)
+    if (!initialised)
+        return;
+
     switch (severity)
     {
     case severity_type::debug:

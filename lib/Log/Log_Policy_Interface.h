@@ -16,7 +16,7 @@
 
 struct log_policy_interface
 {
-	virtual void open_ostream(const String &name) = 0;
+	virtual bool open_ostream(const String &name) = 0;
 	virtual void close_ostream() = 0;
 	virtual void write(const String &msg) = 0;
 
