@@ -55,11 +55,6 @@ file_log_policy::~file_log_policy()
     }
 }
 
-SdFat &file_log_policy::getFileSystem()
-{
-    return sd;
-}
-
 File &file_log_policy::getLogFile()
 {
     return log_file;

@@ -35,12 +35,11 @@ class file_log_policy : public log_policy_interface
 
 public:
 	file_log_policy() {}
-	bool open_ostream(const String &file_name);
-	void close_ostream();
-	void write(const String &msg);
+	bool open_ostream(const String &file_name) override;
+	void close_ostream() override;
+	void write(const String &msg) override;
 	~file_log_policy();
 
-	SdFat &getFileSystem();
 	File &getLogFile();
 };
 

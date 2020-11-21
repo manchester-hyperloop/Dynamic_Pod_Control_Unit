@@ -23,7 +23,7 @@
 File &getLogFileMock()
 {
     file_log_policy *policy = log_inst.getActiveLogPolicy();
-    TEST_ASSERT(policy != nullptr);
+    TEST_ASSERT(policy);
 
     return policy->getLogFile();
 }
@@ -187,6 +187,8 @@ int main(int argc, char **argv)
     RUN_TEST(test_logger_takes_variadic_args);
     RUN_TEST(test_logger_prints_time);
     RUN_TEST(test_logger_prints_severity);
+
+    RUN_TEST(test_logger_may_reset);
     RUN_TEST(test_logger_fails_on_sd_failure);
     RUN_TEST(test_logger_fails_on_output_failure);
     RUN_TEST(test_logger_fails_on_rtc_failure);
