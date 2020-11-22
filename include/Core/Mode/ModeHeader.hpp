@@ -13,5 +13,5 @@
 // #include "ModeIdle.hpp"
 
 #ifdef UNIT_TEST
-#include "../../../mocks/Mode_Mock/Mode_Mock.hpp"
+#include <Mode_Mock.hpp>
 #endif
