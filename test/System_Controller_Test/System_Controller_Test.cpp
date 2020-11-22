@@ -8,7 +8,7 @@
 
 #include <unity.h>
 #include "Core/SystemController.hpp"
-#include "../../mocks/Mode/Mode_Test_Mock.hpp"
+#include <Mode_Mock.hpp>
 #include <Instance.hpp>
 
 void setup(void)

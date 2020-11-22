@@ -9,8 +9,13 @@
 #define LIB_LOG_LOG_HPP
 
 #include "Logger.hpp"
+#include "Severity_Type.hpp"
 
-extern logger<file_log_policy> &log_inst;
+/**
+ * The singleton instance of the logger
+ * Declared as extern to be accessable everywhere in the program
+ */
+extern Logger &log_inst;
 
 #ifdef LOGGING_LEVEL_1
 #define LOG log_inst.print<severity_type::debug>

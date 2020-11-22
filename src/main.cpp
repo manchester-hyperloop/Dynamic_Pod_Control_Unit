@@ -9,20 +9,24 @@
 #ifndef UNIT_TEST
 #include <Arduino.h>
 #else
-#include "../../mocks/Arduino/Fake_Duino.hpp"
+#include <Arduino_Mock.hpp>
 #endif
 
-#include "Core/SystemController.hpp"
+// #include "Core/SystemController.hpp"
 #include <Log.hpp>
 
-Core::SystemController &ctrl = Core::SystemController::getSysCtrlInstance();
+// Core::SystemController &ctrl = Core::SystemController::getSysCtrlInstance();
 
 void setup()
 {
+  // Start the serial port
   Serial.begin(115200);
+
+  // Initialise the logger
+  log_inst.init();
   LOG("Starting...");
 
-  ctrl.init(nullptr);
+  // ctrl.init(nullptr);
 }
 
 void loop()

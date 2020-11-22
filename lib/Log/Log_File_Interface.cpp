@@ -5,9 +5,9 @@
 //  Created by Harry O'Brien on 17/10/2020.
 //
 
-#include "Log_Policy.h"
+#include "Log_File_Interface.hpp"
 
-bool file_log_policy::open_ostream(const String &file_name)
+bool Log_File_Interface::open_ostream(const String &file_name)
 {
     if (!sd.begin(CS_Pin))
     {
@@ -18,7 +18,7 @@ bool file_log_policy::open_ostream(const String &file_name)
     String dir_name = "Logs";
     sd.mkdir(dir_name.c_str());
 
-    String const logPath = dir_name + "/" + "12345678.log"; //file_name;
+    String const logPath = dir_name + "/" + file_name;
 
     log_file = sd.open(logPath, FILE_WRITE);
     if (!log_file)
@@ -30,7 +30,7 @@ bool file_log_policy::open_ostream(const String &file_name)
     return true;
 }
 
-void file_log_policy::close_ostream()
+void Log_File_Interface::close_ostream()
 {
     if (log_file)
     {
@@ -38,7 +38,7 @@ void file_log_policy::close_ostream()
     }
 }
 
-void file_log_policy::write(const String &msg)
+void Log_File_Interface::write(const String &msg)
 {
     log_file.println(msg);
 #ifdef LOG_TO_SERIAL
@@ -47,7 +47,7 @@ void file_log_policy::write(const String &msg)
     log_file.flush();
 }
 
-file_log_policy::~file_log_policy()
+Log_File_Interface::~Log_File_Interface()
 {
     if (log_file)
     {
@@ -55,7 +55,7 @@ file_log_policy::~file_log_policy()
     }
 }
 
-File &file_log_policy::getLogFile()
+File &Log_File_Interface::getLogFile()
 {
     return log_file;
 }

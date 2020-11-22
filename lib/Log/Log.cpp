@@ -7,4 +7,4 @@
 
 #include "Log.hpp"
 
-logger<file_log_policy> &log_inst = logger<file_log_policy>::getLoggerInstance();
+Logger &log_inst = Logger::getLoggerInstance();

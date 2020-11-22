@@ -12,9 +12,9 @@
 #include <sstream>
 #include <iostream>
 
-#include "../../mocks/sd_mocks/SdFat.h"
-#include "../../mocks/rtc_mocks/RTC_Lib_Mock.hpp"
-#include "../../mocks/Arduino/Fake_Duino.hpp"
+#include <SD_Mock.hpp>
+#include <RTC_Mock.hpp>
+#include <Arduino_Mock.hpp>
 
 /****************************************************************************************************/
 /*                                             HELPERS                                              */
@@ -22,7 +22,7 @@
 // Get the log policy from the log instance
 File &getLogFileMock()
 {
-    file_log_policy *policy = log_inst.getActiveLogPolicy();
+    Log_File_Interface *policy = log_inst.getActiveLogInterface();
     TEST_ASSERT(policy);
 
     return policy->getLogFile();
@@ -120,13 +120,13 @@ void test_logger_prints_severity(void)
 void test_logger_may_reset(void)
 {
     // Check that policy is still alive
-    TEST_ASSERT(log_inst.getActiveLogPolicy() != nullptr);
+    TEST_ASSERT(log_inst.getActiveLogInterface() != nullptr);
 
     // reset
     log_inst.reset();
 
     // policy should now be null
-    TEST_ASSERT(log_inst.getActiveLogPolicy() == nullptr);
+    TEST_ASSERT(log_inst.getActiveLogInterface() == nullptr);
 }
 
 // Logger should fail to start and return false if unable to initialise SD card hardware
@@ -174,10 +174,6 @@ void test_logger_fails_on_rtc_failure(void)
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
-
-    File::setup_mock();
-    SdFat::setup_mock();
-    RTC_DS1307::setup_mock();
 
     log_inst.init();
 
