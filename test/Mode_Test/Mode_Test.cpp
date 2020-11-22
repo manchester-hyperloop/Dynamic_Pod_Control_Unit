@@ -8,7 +8,7 @@
 
 #include <unity.h>
 #include "Core/SystemController.hpp"
-#include "../../mocks/Mode/Mode_Test_Mock.hpp"
+#include <Mode_Mock.hpp>
 
 // Mode should not execute 'run' before an initialisation function before executing its main loop
 void test_mode_initialisation(void)

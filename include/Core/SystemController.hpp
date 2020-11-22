@@ -12,6 +12,9 @@
 #include "Mode/ModeType.hpp"
 #include "Mode/Mode.hpp"
 
+// TODO: Initialise timestamp on first load
+// Probs best to do this with onboard EEPROM
+
 namespace Core
 {
     class SystemController

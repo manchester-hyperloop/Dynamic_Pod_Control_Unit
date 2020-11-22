@@ -8,19 +8,27 @@
 
 #ifndef UNIT_TEST
 #include <Arduino.h>
-#include "Core/SystemController.hpp"
-// #include "Core/Mode/"
+#else
+#include <Arduino_Mock.hpp>
+#endif
 
-Core::SystemController &ctrl = Core::SystemController::getSysCtrlInstance();
+// #include "Core/SystemController.hpp"
+#include <Log.hpp>
+
+// Core::SystemController &ctrl = Core::SystemController::getSysCtrlInstance();
 
 void setup()
 {
+  // Start the serial port
   Serial.begin(115200);
-  ctrl.init(nullptr);
+
+  // Initialise the logger
+  log_inst.init();
+  LOG("Starting...");
+
+  // ctrl.init(nullptr);
 }
 
 void loop()
 {
 }
-
-#endif /* ifndef UNIT_TEST */
