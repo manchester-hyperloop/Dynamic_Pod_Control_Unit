@@ -44,7 +44,7 @@ namespace Core
         /**
          *  This method initialises the system. It MUST be called before 'run' is executed.
          */
-        bool init(Mode::Mode *initialMode);
+        bool init(Mode::ModeType initialMode);
 
         /**
          *  Check for whether system is initialised yet.

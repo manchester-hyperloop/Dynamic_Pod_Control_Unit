@@ -9,6 +9,8 @@
 #ifndef CORE_MODE_MODE_HPP
 #define CORE_MODE_MODE_HPP
 
+#include "ModeType.hpp"
+
 namespace Core
 {
     class SystemController;
@@ -16,7 +18,7 @@ namespace Core
     namespace Mode
     {
         /**
-         * Pure virtual class to define the behaviour of the system. Inhereted into other
+         * Pure virtual class to define the behaviour of the system. Inhereted by other
          * modes, such as 'initialise', 'run' etc., which perform tasks relevant to their
          * name.
          */
@@ -24,6 +26,7 @@ namespace Core
         {
         protected:
             SystemController *sysCtrl;
+            bool initialised = false;
 
         public:
             Mode(SystemController *_sysCtrl) : sysCtrl(_sysCtrl)
@@ -43,7 +46,13 @@ namespace Core
              * Executes the behaviour for this mode. Repeatedly called by SystemController.
              * If something fails part way through, the method will return false.
              */
-            virtual bool run() = 0;
+            virtual bool run()
+            {
+                if (!initialised)
+                    return false;
+
+                return true;
+            };
 
             /**
              * Gets the type of the mode

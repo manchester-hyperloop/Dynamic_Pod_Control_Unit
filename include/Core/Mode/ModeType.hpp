@@ -15,11 +15,33 @@ namespace Core
     {
         enum ModeType
         {
-            // INITIALISE,
-            // IDLE,
+            INITIALISE,
+            IDLE,
+            SHUTDOWN,
 
+#ifdef UNIT_TEST
             TEST
+#endif
         };
+
+        /**
+         * Functor 'ModeNameInverse' that is able to take a ModeType and return a human-readable version
+         */
+        struct
+        {
+            const char *operator()(ModeType e)
+            {
+                const char *ModeName[] = {
+                    "Initialise",
+                    "Idle",
+                    "Shutdown",
+
+                    "Test",
+                };
+
+                return ModeName[e];
+            }
+        } ModeNameInverse;
     } // namespace Mode
 } // namespace Core
 

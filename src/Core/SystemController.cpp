@@ -10,6 +10,8 @@
 #include <Arduino.h>
 #endif
 
+#include <Log.hpp>
+
 #include "Core/SystemController.hpp"
 #include "Core/Mode/ModeHeader.hpp"
 
@@ -25,20 +27,17 @@ SystemController &SystemController::getSysCtrlInstance()
     return instance;
 }
 
-bool SystemController::init(Mode::Mode *initialMode)
+bool SystemController::init(Mode::ModeType initialMode)
 {
     // Do not initialise twice
     if (initialised)
         return false;
 
-#ifndef UNIT_TEST
-
     // Everything's working correctly
-    Serial.println("System controller is alive!");
-#endif
+    LOG("System controller is alive.");
 
     // Set the initial mode
-    nextMode = initialMode;
+    shouldTransitionToMode(initialMode);
 
     // set ctrl state to initialised
     initialised = true;
@@ -80,13 +79,24 @@ void SystemController::shouldTransitionToMode(Mode::ModeType newMode)
 {
     switch (newMode)
     {
+    case Mode::INITIALISE:
+        nextMode = new Mode::ModeInitialise(this);
+        return;
+    case Mode::IDLE:
+        nextMode = new Mode::ModeIdle(this);
+        return;
+    case Mode::SHUTDOWN:
+        nextMode = new Mode::ModeShutdown(this);
+        return;
+
 #ifdef UNIT_TEST
     case Mode::TEST:
         nextMode = new Mode::ModeTest(this);
-        break;
+        return;
 #endif
+
     default:
-        nextMode = nullptr;
+        nextMode = new Mode::ModeIdle(this);
     }
 }
 

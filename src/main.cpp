@@ -12,10 +12,10 @@
 #include <Arduino_Mock.hpp>
 #endif
 
-// #include "Core/SystemController.hpp"
+#include "Core/SystemController.hpp"
 #include <Log.hpp>
 
-// Core::SystemController &ctrl = Core::SystemController::getSysCtrlInstance();
+Core::SystemController &ctrl = Core::SystemController::getSysCtrlInstance();
 
 void setup()
 {
@@ -26,7 +26,7 @@ void setup()
   log_inst.init();
   LOG("Starting...");
 
-  // ctrl.init(nullptr);
+  ctrl.init(Core::Mode::INITIALISE);
 }
 
 void loop()

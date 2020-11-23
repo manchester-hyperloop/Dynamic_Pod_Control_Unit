@@ -9,8 +9,9 @@
 #include "ModeType.hpp"
 
 #include "Mode.hpp"
-// #include "ModeInitialise.hpp"
-// #include "ModeIdle.hpp"
+#include "ModeInitialise.hpp"
+#include "ModeIdle.hpp"
+#include "ModeShutdown.hpp"
 
 #ifdef UNIT_TEST
 #include <Mode_Mock.hpp>
