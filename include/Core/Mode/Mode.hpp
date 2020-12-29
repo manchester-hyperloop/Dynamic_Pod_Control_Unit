@@ -55,6 +55,14 @@ namespace Core
             };
 
             /**
+             * Whether the current mode has been initialised
+             */
+            bool isInitialised()
+            {
+                return initialised;
+            }
+
+            /**
              * Gets the type of the mode
              */
             virtual ModeType type() = 0;

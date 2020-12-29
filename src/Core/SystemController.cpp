@@ -47,7 +47,7 @@ bool SystemController::init(Mode::ModeType initialMode)
 
 bool SystemController::run()
 {
-    // do not run if we're not initialised
+    // Do not run if we're not initialised
     if (!initialised)
         return false;
 
@@ -56,15 +56,15 @@ bool SystemController::run()
     {
         bool transitionSuccess = transitionToNextMode();
         if (!transitionSuccess)
-        {
             return false;
-        }
     }
 
-    // execute the defined behaviour for the current mode
-    if (activeMode != nullptr)
-        activeMode->run();
+    // Check if properly initialised
+    if (activeMode == nullptr || !activeMode->isInitialised())
+        return false;
 
+    // Execute the defined behaviour for the current mode
+    activeMode->run();
     return true;
 }
 
@@ -111,12 +111,8 @@ bool SystemController::transitionToNextMode()
 
     // Initialise the new active mode
     bool initSuccess = activeMode->init();
-    if (!initSuccess)
-    {
-        return false;
-    }
 
-    return true;
+    return initSuccess;
 }
 
 Mode::Mode *SystemController::getCurrentlyActiveMode()

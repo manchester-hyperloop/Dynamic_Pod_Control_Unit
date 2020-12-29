@@ -70,6 +70,7 @@ void test_system_controller_is_initialised(void)
     TEST_ASSERT(sysCtrl.isInitialised());
 }
 
+// System controller shouldn't invoke the initialisation function twice
 void test_sys_controller_cant_initialise_twice(void)
 {
     Core::SystemController &sysCtrl = Core::SystemController::getSysCtrlInstance();
@@ -163,6 +164,12 @@ void test_mode_not_run_on_failed_init(void)
     Core::Mode::ModeTest::mayInitialise = true;
 }
 
+// System controller should transition to 'idle' state if a 'new' state cannot be initialised properly
+void test_transition_to_idle_on_failed_init(void)
+{
+    // ...
+}
+
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
@@ -176,6 +183,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_no_change_if_no_request);
     RUN_TEST(test_run_active_mode);
     RUN_TEST(test_mode_not_run_on_failed_init);
+    RUN_TEST(test_transition_to_idle_on_failed_init);
 
     UNITY_END();
     return 0;
