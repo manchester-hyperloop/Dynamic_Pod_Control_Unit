@@ -9,6 +9,8 @@
 #ifndef CORE_MODE_MODE_HPP
 #define CORE_MODE_MODE_HPP
 
+#include "ModeType.hpp"
+
 namespace Core
 {
     class SystemController;
