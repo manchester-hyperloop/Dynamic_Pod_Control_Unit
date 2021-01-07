@@ -7,3 +7,18 @@
 [submodule "lib/Instance"]
 	path = lib/Instance
 	url = https://github.com/manchester-hyperloop/Instance.git
+[submodule "lib/Log"]
+	path = lib/Log
+	url = https://github.com/manchester-hyperloop/Log.git
+[submodule "lib/Notifications"]
+	path = lib/Notifications
+	url = https://github.com/manchester-hyperloop/Notifications.git
+[submodule "lib/Callback"]
+	path = lib/Callback
+	url = https://github.com/manchester-hyperloop/Callback.git
+[submodule "lib/RTClib"]
+	path = lib/RTClib
+	url = https://github.com/manchester-hyperloop/RTClib.git
+[submodule "lib/SdFat"]
+	path = lib/SdFat
+	url = https://github.com/manchester-hyperloop/SdFat.git
