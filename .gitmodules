@@ -22,3 +22,6 @@
 [submodule "lib/SdFat"]
 	path = lib/SdFat
 	url = https://github.com/manchester-hyperloop/SdFat.git
+[submodule "lib/Seeed_Arduino_CAN"]
+	path = lib/Seeed_Arduino_CAN
+	url = https://github.com/manchester-hyperloop/Seeed_Arduino_CAN.git
