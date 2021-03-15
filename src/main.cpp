@@ -12,10 +12,8 @@
 #include <Arduino_Mock.hpp>
 #endif
 
-// #include "Core/SystemController.hpp"
 #include <Log.hpp>
-
-// Core::SystemController &ctrl = Core::SystemController::getSysCtrlInstance();
+#include "Core/SystemController.hpp"
 
 void setup()
 {
@@ -24,9 +22,6 @@ void setup()
 
   // Initialise the logger
   log_inst.init();
-  LOG("Starting...");
-
-  // ctrl.init(nullptr);
 }
 
 void loop()
