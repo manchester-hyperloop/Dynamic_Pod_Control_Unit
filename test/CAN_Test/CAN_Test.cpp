@@ -9,7 +9,7 @@
 #include <unity.h>
 #include <CAN_Interface.hpp>
 #include <Notifications.hpp>
-#include <CAN_Mock.hpp>
+#include <MCP2515_Mock.hpp>
 #include <Log.hpp>
 #include <string.h>
 
@@ -20,7 +20,7 @@ void setup(void)
     interface = new CAN_Interface();
     interface->init();
 
-    CAN_Mock::message_available = true;
+    MCP2515::message_available = true;
 }
 
 void teardown(void)
@@ -50,7 +50,7 @@ std::string getLastLoggedMessage()
 // data from an abstract CAN_Frame can be copied to another
 void test_copy_frame(void)
 {
-    CAN_Frame f1, f2;
+    can_frame f1, f2;
     f1.can_id = 13;
     f1.can_dlc = 3;
 
@@ -75,48 +75,61 @@ void test_message_send_possible(void)
     uint16_t test_data = 11;
     Echo_Response_Packet pkt = Echo_Response_Packet::serialise(test_data);
 
-    bool result = interface->send(pkt);
+    bool result = interface->send(&pkt);
+    // Sanity check
     TEST_ASSERT(result);
 
     Echo_Response_Packet tx_packet;
-    copy_frame(&tx_packet, &CAN_Mock::latest_tx_frame);
+    copy_frame(&tx_packet, &MCP2515::latest_tx_frame);
 
     uint16_t sent_value;
     tx_packet.deserialise(&sent_value);
     TEST_ASSERT_EQUAL(test_data, sent_value);
 }
 
-// Warning will be logged if CAN did NOT initialise properly
-void test_log_warning_on_unsuccessful_init(void)
+// Error will be logged if CAN did NOT initialise properly
+void test_log_error_on_unsuccessful_init(void)
 {
-    CAN_Mock::mayInitialise = false;
+    MCP2515::mayInitialise = false;
 
     interface = new CAN_Interface();
     interface->init();
 
     TEST_ASSERT(getLastLoggedMessage().find("ERROR") != std::string::npos);
 
-    CAN_Mock::mayInitialise = true;
+    MCP2515::mayInitialise = true;
 }
 
-// Error will be logged if message did NOT send successfully
+// Warning will be logged if message did NOT send successfully
 void test_log_warning_on_unsuccessful_message_send(void)
 {
-    CAN_Mock::may_send_message = false;
+    MCP2515::may_send_message = false;
 
     setup();
 
     uint16_t test_data = 11;
-    CAN_Interface interface;
     Echo_Response_Packet pkt = Echo_Response_Packet::serialise(test_data);
 
-    bool result = interface.send(pkt);
+    bool result = interface->send(&pkt);
+    // Sanity check
     TEST_ASSERT_FALSE(result);
 
     // Check message logged successfully
     TEST_ASSERT(getLastLoggedMessage().find("WARNING") != std::string::npos);
 
-    CAN_Mock::may_send_message = true;
+    MCP2515::may_send_message = true;
+}
+
+// Error will be logged if we cannot set CAN controller to Normal mode
+void test_log_error_on_failure_to_set_mode(void)
+{
+    TEST_FAIL_MESSAGE("Test not implemented");
+}
+
+// Error will be logged if we cannot set bitrate and speed of CAN controller
+void test_log_error_on_failure_to_set_bitrate_and_speed(void)
+{
+    TEST_FAIL_MESSAGE("Test not implemented");
 }
 
 int main(int argc, char **argv)
@@ -129,8 +142,10 @@ int main(int argc, char **argv)
     RUN_TEST(test_copy_frame);
 
     RUN_TEST(test_message_send_possible);
+    RUN_TEST(test_log_error_on_unsuccessful_init);
     RUN_TEST(test_log_warning_on_unsuccessful_message_send);
-    RUN_TEST(test_log_warning_on_unsuccessful_init);
+    // RUN_TEST(test_log_error_on_failure_to_set_mode);
+    // RUN_TEST(test_log_error_on_failure_to_set_bitrate_and_speed);
 
     UNITY_END();
     return 0;
