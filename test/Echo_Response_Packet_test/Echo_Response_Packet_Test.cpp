@@ -3,7 +3,7 @@
 #include <CAN_Interface.hpp>
 #include <Instance.hpp>
 #include <Notifications.hpp>
-#include <CAN_Mock.hpp>
+#include <MCP2515_Mock.hpp>
 
 CAN_Interface *interface = nullptr;
 
@@ -12,7 +12,7 @@ void setup(void)
     interface = new CAN_Interface();
     interface->init();
 
-    CAN_Mock::message_available = true;
+    MCP2515::message_available = true;
 }
 
 void teardown(void)
@@ -30,7 +30,7 @@ void teardown(void)
 void test_serialise_response_to_correct_packet(void)
 {
     uint16_t random_test_value = 13;
-    CAN_Frame test_frame = Echo_Response_Packet::serialise(random_test_value);
+    can_frame test_frame = Echo_Response_Packet::serialise(random_test_value);
 
     // Check that the id is set correctly
     TEST_ASSERT_EQUAL(test_frame.can_id, Packet_Priority::PRIORITY_ECHO_RESPONSE);
@@ -66,7 +66,7 @@ void get_latest_response_packet(Echo_Response_Packet pkt)
 void test_notification_sent_on_response_packet_receive(void)
 {
     uint16_t random_test_value = 14;
-    CAN_Mock::set_packet_rx(Echo_Response_Packet::serialise(random_test_value));
+    MCP2515::set_packet_rx(Echo_Response_Packet::serialise(random_test_value));
 
     setup();
 
