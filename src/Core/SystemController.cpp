@@ -15,7 +15,10 @@
 
 using namespace Core;
 
-SystemController::SystemController() : activeMode(nullptr), nextMode(nullptr)
+SystemController::SystemController()
+    : activeMode(nullptr),
+      nextMode(nullptr),
+      can_bus()
 {
 }
 
@@ -31,17 +34,18 @@ bool SystemController::init(Mode::Mode *initialMode)
     if (initialised)
         return false;
 
-#ifndef UNIT_TEST
-
-    // Everything's working correctly
-    Serial.println("System controller is alive!");
-#endif
+    // Initialise the can bus
+    if (!can_bus.init())
+        return false;
 
     // Set the initial mode
     nextMode = initialMode;
 
     // set ctrl state to initialised
     initialised = true;
+
+    // Everything's working correctly
+    LOG("System controller is alive!");
 
     return true;
 }

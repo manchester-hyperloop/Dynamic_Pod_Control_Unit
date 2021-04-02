@@ -9,6 +9,8 @@
 #ifndef CORE_SYSTEM_CONTROLLER_HPP
 #define CORE_SYSTEM_CONTROLLER_HPP
 
+#include <CAN_Interface.hpp>
+
 #include "Mode/ModeType.hpp"
 #include "Mode/Mode.hpp"
 
@@ -23,6 +25,8 @@ namespace Core
 
         Mode::Mode *activeMode;
         Mode::Mode *nextMode;
+
+        CAN_Interface can_bus;
 
     public:
         /**

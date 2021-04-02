@@ -22,3 +22,6 @@
 [submodule "lib/SdFat"]
 	path = lib/SdFat
 	url = https://github.com/manchester-hyperloop/SdFat.git
+[submodule "lib/MCP2515"]
+	path = lib/MCP2515
+	url = https://github.com/manchester-hyperloop/arduino-mcp2515.git
