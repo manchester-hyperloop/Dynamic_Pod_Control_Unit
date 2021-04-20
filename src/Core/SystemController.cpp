@@ -15,10 +15,13 @@
 
 using namespace Core;
 
+
+
 SystemController::SystemController()
-    : activeMode(nullptr),
-      nextMode(nullptr),
-      can_bus()
+    : can_bus(),
+      previousMode(0),
+      currentMode(0),
+      nextMode(0)
 {
 }
 

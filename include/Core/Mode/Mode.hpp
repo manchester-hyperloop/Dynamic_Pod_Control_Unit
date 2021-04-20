@@ -9,7 +9,7 @@
 #ifndef CORE_MODE_MODE_HPP
 #define CORE_MODE_MODE_HPP
 
-#include "ModeType.hpp"
+typedef uint8_t statemask;
 
 namespace Core
 {
@@ -17,42 +17,49 @@ namespace Core
 
     namespace Mode
     {
-        /**
-         * Pure virtual class to define the behaviour of the system. Inhereted into other
-         * modes, such as 'initialise', 'run' etc., which perform tasks relevant to their
-         * name.
-         */
+        enum MODE_ID {
+            MODE_ID_FINALISE = 0xff, // special value to signify shutdown
+            MODE_ID_IDLE = 0,
+            MODE_ID_ACCEL = 1,
+            MODE_ID_STEADY = 2,
+            MODE_ID_DECEL = 3,
+            MODE_ID_PANIC = 4,
+        };
+
+        /// Mode interface
         class Mode
         {
         protected:
             SystemController *sysCtrl;
 
         public:
+            static constexpr statemask MODE_STATEMASK_DEFAULT = 0xff;
+            static constexpr statemask MODE_STATEMASK_NULL = 0x00;
+            static constexpr statemask MODE_STATEMASK_IDLE = 0x01;
+            static constexpr statemask MODE_STATEMASK_ACCEL = 0x02;
+            static constexpr statemask MODE_STATEMASK_STEADY = 0x04;
+            static constexpr statemask MODE_STATEMASK_DECEL = 0x08;
+            static constexpr statemask MODE_STATEMASK_PANIC = 0x10;
+
             Mode(SystemController *_sysCtrl) : sysCtrl(_sysCtrl)
             {
             }
 
-            virtual ~Mode()
-            {
-            }
+            /// Called whenever control is to be handed to the mode
+            virtual void setup() = 0;
 
-            /**
-             * Initialise this mode
-             */
-            virtual bool init() = 0;
+            /// The "main loop" body
+            /// @returns The id of the mode to hand control to
+            virtual enum MODE_ID tick() = 0;
 
-            /**
-             * Executes the behaviour for this mode. Repeatedly called by SystemController.
-             * If something fails part way through, the method will return false.
-             */
-            virtual bool run() = 0;
+            /// Called whenever control is to be taken from the mode
+            virtual void teardown() = 0;
 
-            /**
-             * Gets the type of the mode
-             */
-            virtual ModeType type() = 0;
+            /// Statemask used to calculate which event handlers should be ran
+            /// @returns The satemask for the current state
+            virtual statemask get_statemask() const = 0;
         };
-    } // namespace Mode
-} // namespace Core
+    }
+}
 
 #endif /* CORE_MODE_MODE_HPP */

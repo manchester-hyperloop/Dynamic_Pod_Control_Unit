@@ -11,7 +11,6 @@
 
 #include <CAN_Interface.hpp>
 
-#include "Mode/ModeType.hpp"
 #include "Mode/Mode.hpp"
 
 // TODO: Initialise timestamp on first load
@@ -98,6 +97,6 @@ namespace Core
         void setTestValue(int val) { test_value = val; }
 #endif
     };
-} // namespace Core
+}
 
 #endif /* CORE_SYSTEM_CONTROLLER_HPP */

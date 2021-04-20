@@ -13,7 +13,12 @@
 #endif
 
 #include <Log.hpp>
+
+#include "Common/Wiring_Config.hpp"
 #include "Core/SystemController.hpp"
+
+volatile bool have_can_frame = false;
+void can_isr();
 
 void setup()
 {
@@ -22,8 +27,14 @@ void setup()
 
   // Initialise the logger
   log_inst.init();
+
+  attachInterrupt(digitalPinToInterrupt(HYPER_PIN_CAN_IRQ), can_isr, FALLING);
 }
 
 void loop()
 {
+}
+
+void can_isr() {
+  have_can_frame = true;
 }
