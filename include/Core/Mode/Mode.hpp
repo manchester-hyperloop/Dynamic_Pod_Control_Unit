@@ -9,7 +9,9 @@
 #ifndef CORE_MODE_MODE_HPP
 #define CORE_MODE_MODE_HPP
 
-typedef uint8_t statemask;
+#include <stdint.h>
+
+typedef uint8_t statemask_t;
 
 namespace Core
 {
@@ -17,47 +19,52 @@ namespace Core
 
     namespace Mode
     {
+        /// Uniquely identifies each mode. Used as an index into a states table
         enum MODE_ID {
-            MODE_ID_FINALISE = 0xff, // special value to signify shutdown
+            MODE_FINALISE = 0xff, // special value to signify shutdown
             MODE_ID_IDLE = 0,
             MODE_ID_ACCEL = 1,
             MODE_ID_STEADY = 2,
             MODE_ID_DECEL = 3,
             MODE_ID_PANIC = 4,
+#ifdef UNIT_TEST
+            MODE_ID_TEST = 5,
+#endif
         };
 
+#ifdef UNIT_TEST
+        constexpr size_t MODE_COUNT = 6;
+#else
+        constexpr size_t MODE_COUNT = 5;
+#endif
+
         /// Mode interface
-        class Mode
+        struct Mode
         {
-        protected:
-            SystemController *sysCtrl;
-
-        public:
-            static constexpr statemask MODE_STATEMASK_DEFAULT = 0xff;
-            static constexpr statemask MODE_STATEMASK_NULL = 0x00;
-            static constexpr statemask MODE_STATEMASK_IDLE = 0x01;
-            static constexpr statemask MODE_STATEMASK_ACCEL = 0x02;
-            static constexpr statemask MODE_STATEMASK_STEADY = 0x04;
-            static constexpr statemask MODE_STATEMASK_DECEL = 0x08;
-            static constexpr statemask MODE_STATEMASK_PANIC = 0x10;
-
-            Mode(SystemController *_sysCtrl) : sysCtrl(_sysCtrl)
-            {
-            }
+            static constexpr statemask_t MODE_STATEMASK_DEFAULT = 0xff;
+            static constexpr statemask_t MODE_STATEMASK_NULL = 0x00;
+            static constexpr statemask_t MODE_STATEMASK_IDLE = 0x01;
+            static constexpr statemask_t MODE_STATEMASK_ACCEL = 0x02;
+            static constexpr statemask_t MODE_STATEMASK_STEADY = 0x04;
+            static constexpr statemask_t MODE_STATEMASK_DECEL = 0x08;
+            static constexpr statemask_t MODE_STATEMASK_PANIC = 0x10;
+#ifdef UNIT_TEST
+            static constexpr statemask_t MODE_STATEMASK_TEST = 0x80;
+#endif
 
             /// Called whenever control is to be handed to the mode
-            virtual void setup() = 0;
+            virtual void setup(SystemController *state) = 0;
 
             /// The "main loop" body
             /// @returns The id of the mode to hand control to
-            virtual enum MODE_ID tick() = 0;
+            virtual MODE_ID tick(SystemController *state) = 0;
 
             /// Called whenever control is to be taken from the mode
-            virtual void teardown() = 0;
+            virtual void teardown(SystemController *state) = 0;
 
             /// Statemask used to calculate which event handlers should be ran
             /// @returns The satemask for the current state
-            virtual statemask get_statemask() const = 0;
+            virtual statemask_t get_statemask() const = 0;
         };
     }
 }

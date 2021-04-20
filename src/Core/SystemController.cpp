@@ -15,108 +15,137 @@
 
 using namespace Core;
 
+Mode::ModeIdle stateIdle;
+Mode::ModeAccel stateAccel;
+Mode::ModeSteady stateSteady;
+Mode::ModeDecel stateDecel;
+Mode::ModePanic statePanic;
+#ifdef UNIT_TEST
+Mode::ModeTest stateTest;
+#endif
 
+#ifdef UNIT_TEST
+Mode::Mode *states[] = {
+    [Mode::MODE_ID_IDLE] = &stateIdle,
+    [Mode::MODE_ID_ACCEL] = &stateAccel,
+    [Mode::MODE_ID_STEADY] = &stateSteady,
+    [Mode::MODE_ID_DECEL] = &stateDecel,
+    [Mode::MODE_ID_PANIC] = &statePanic,
+    [Mode::MODE_ID_TEST] = &stateTest,
+};
+#else
+Mode::Mode *states[] = {
+    [Mode::MODE_ID_IDLE] = &stateIdle,
+    [Mode::MODE_ID_ACCEL] = &stateAccel,
+    [Mode::MODE_ID_STEADY] = &stateSteady,
+    [Mode::MODE_ID_DECEL] = &stateDecel,
+    [Mode::MODE_ID_PANIC] = &statePanic,
+};
+#endif
 
 SystemController::SystemController()
-    : can_bus(),
-      previousMode(0),
-      currentMode(0),
-      nextMode(0)
+    : previousMode(Mode::MODE_ID_IDLE),
+      currentMode(Mode::MODE_ID_IDLE)
 {
 }
 
-SystemController &SystemController::getSysCtrlInstance()
+SystemController &SystemController::getInstance()
 {
     static SystemController instance;
+
     return instance;
 }
 
-bool SystemController::init(Mode::Mode *initialMode)
+bool SystemController::init(const Mode::MODE_ID initialMode)
 {
-    // Do not initialise twice
+    // do not initialise twice
+    // TODO: would it be better to return true and silently ignore the error,
+    // or return a dedicated Error enum? imo calling init multiple times isnt
+    // an error, its just wasted work and thus shouldnt "fail" per-se
     if (initialised)
         return false;
 
-    // Initialise the can bus
+#ifdef HAS_CAN_BUS
+    // initialise the can bus
     if (!can_bus.init())
         return false;
+#endif
 
-    // Set the initial mode
-    nextMode = initialMode;
+    previousMode = initialMode;
+    currentMode = initialMode;
 
     // set ctrl state to initialised
     initialised = true;
 
-    // Everything's working correctly
-    LOG("System controller is alive!");
+    // everything's working correctly
+    LOG("System controller was initialised!");
 
     return true;
+}
+
+void SystemController::finalise()
+{
+    LOG("System controller was finalised!");
 }
 
 bool SystemController::run()
 {
-    // do not run if we're not initialised
+    // do not run if initialisation failed
     if (!initialised)
         return false;
 
-    // See if we should transition to a new mode
-    if (nextMode != nullptr)
-    {
-        bool transitionSuccess = transitionToNextMode();
-        if (!transitionSuccess)
-        {
-            return false;
+    bool panicked = false;
+
+    states[currentMode]->setup(this);
+
+    while (1) {
+        const Mode::MODE_ID nextMode = states[currentMode]->tick(this);
+
+        if (nextMode == Mode::MODE_FINALISE)
+            break;
+
+        // if we ever encounter the panic state, we know that an unrecoverable
+        // error has occured, and thus the system state is unsafe. the panic
+        // mode should eventually allow finalise to run (and never switch to
+        // any other mode), but we need to set the flag to track this
+        // "state poisoning" so that the caller of run can handle this case
+        if (nextMode == Mode::MODE_ID_PANIC)
+            panicked = true;
+
+        // TODO: make atomic by disabling interrupts during the switchover?
+        if (nextMode != previousMode) {
+            states[currentMode]->teardown(this);
+            states[nextMode]->setup(this);
+
+            previousMode = currentMode;
+            currentMode = nextMode;
         }
     }
 
-    // execute the defined behaviour for the current mode
-    if (activeMode != nullptr)
-        activeMode->run();
+    states[currentMode]->teardown(this);
 
-    return true;
+    return !panicked;
 }
 
-void SystemController::resetInstance()
+void SystemController::reset()
 {
     initialised = false;
-    activeMode = nullptr;
-    nextMode = nullptr;
+
+    previousMode = Mode::MODE_ID_IDLE;
+    currentMode = Mode::MODE_ID_IDLE;
 }
 
-void SystemController::shouldTransitionToMode(Mode::ModeType newMode)
+const Mode::Mode *SystemController::getPreviousMode() const
 {
-    switch (newMode)
-    {
-#ifdef UNIT_TEST
-    case Mode::TEST:
-        nextMode = new Mode::ModeTest(this);
-        break;
-#endif
-    default:
-        nextMode = nullptr;
-    }
+    return states[previousMode];
 }
 
-bool SystemController::transitionToNextMode()
+const Mode::Mode *SystemController::getCurrentMode() const
 {
-    // delete active mode
-    delete activeMode;
-
-    // transition the 'next mode' to active mode
-    activeMode = nextMode;
-    nextMode = nullptr;
-
-    // Initialise the new active mode
-    bool initSuccess = activeMode->init();
-    if (!initSuccess)
-    {
-        return false;
-    }
-
-    return true;
+    return states[currentMode];
 }
 
-Mode::Mode *SystemController::getCurrentlyActiveMode()
+const Mode::Mode *SystemController::getModeById(const Mode::MODE_ID id) const
 {
-    return activeMode;
+    return states[id];
 }

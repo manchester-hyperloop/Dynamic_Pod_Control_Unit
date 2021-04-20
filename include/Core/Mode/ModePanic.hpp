@@ -5,19 +5,18 @@
 
 namespace Core {
     namespace Mode {
-        class ModePanic : public Mode {
-            public:
-                void setup() override {
+        struct ModePanic : public Mode {
+                void setup(SystemController *state) override {
                 }
 
-                enum MODE_ID tick() override {
-                    return MODE_ID::MODE_ID_FINALISE;
+                enum MODE_ID tick(SystemController *state) override {
+                    return MODE_ID::MODE_FINALISE;
                 }
 
-                void teardown() override {
+                void teardown(SystemController *state) override {
                 }
 
-                statemask get_statemask() const override {
+                statemask_t get_statemask() const override {
                     return MODE_STATEMASK_PANIC;
                 }
         };

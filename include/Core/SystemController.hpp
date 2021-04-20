@@ -9,7 +9,16 @@
 #ifndef CORE_SYSTEM_CONTROLLER_HPP
 #define CORE_SYSTEM_CONTROLLER_HPP
 
+#include <Log.hpp>
+
+// TODO(mikolaj): this define is here because include paths on my computer are 
+// a bit screwed, and it cannot find the can interface header. once i get that
+// fixed, both it and the related HAS_CAN_BUS define can be removed
+//#define HAS_CAN_BUS
+
+#ifdef HAS_CAN_BUS
 #include <CAN_Interface.hpp>
+#endif
 
 #include "Mode/Mode.hpp"
 
@@ -22,73 +31,58 @@ namespace Core
     {
         bool initialised = false;
 
-        Mode::Mode *activeMode;
-        Mode::Mode *nextMode;
+        Mode::MODE_ID previousMode, currentMode;
 
+#ifdef HAS_CAN_BUS
         CAN_Interface can_bus;
+#endif
 
     public:
-        /**
-         * Dissalow construction from another instance; Singleton class
-         */
+        /// Disallow construction from another instance as we are a singleton
         SystemController(SystemController const &) = delete;
 
-        /**
-         * Delete copy constructor; Singleton class
-         */
+        /// Delete copy constructor as we are a singleton
         void operator=(SystemController const &) = delete;
 
-        /**
-         * Getter. Note that since this class is designed to be a singleton, only 1 instance will ever
-         * exist in memory at any 1 time.
-         */
-        static SystemController &getSysCtrlInstance();
+        /// Singleton instance getter
+        /// @returns The singleton instance of the system controller
+        static SystemController &getInstance();
 
-        /**
-         *  This method initialises the system. It MUST be called before 'run' is executed.
-         */
-        bool init(Mode::Mode *initialMode);
+        /// This method initialises the system. MUST be called before 'run' is executed
+        /// @param initialMode The state we should start in
+        /// @returns Whether the initialisation was successful
+        bool init(const Mode::MODE_ID initialState = Mode::MODE_ID_IDLE);
 
-        /**
-         *  Check for whether system is initialised yet.
-         */
-        bool isInitialised() { return initialised; }
+        /// Whether the system controller instance has been successfully initialised
+        bool isInitialised() const { return initialised; }
 
-        /**
-         *  This method should only ever be called forever from a permanent loop in main. This is the
-         *  entry point to the normal flow of the program.
-         */
+        /// This method deinitialises the system
+        void finalise();
+
+        /// Entrypoint into the state machine. Blocks until a state signals a
+        /// transition into the finalised state. MUST NOT be called after 'finalise' is executed
+        /// @returns Whether the state machine exited gracefully (i.e didn't panic)
         bool run();
 
-        /**
-         * Resets the system controller
-         */
-        void resetInstance();
+        /// Resets the system controller instance. MUST NOT be called after 'finalise' is executed
+        void reset();
 
-        /**
-         * Informs the controller that we should transition to the given mode next.
-         */
-        void shouldTransitionToMode(Mode::ModeType newMode);
+        /// Previous mode getter
+        /// @returns A read-only pointer to the previously active mode
+        const Mode::Mode *getPreviousMode() const;
 
-        /**
-         * Gets the currently active mode
-         */
-        Mode::Mode *getCurrentlyActiveMode();
+        /// Active mode getter
+        /// @returns A read-only pointer to the currently active mode
+        const Mode::Mode *getCurrentMode() const;
+
+        /// Generic mode getter. Allows indexing to find any given mode
+        /// @returns A read-only pointer to the mode with the given id
+        const Mode::Mode *getModeById(const Mode::MODE_ID id) const;
 
     private:
-        /**
-         *  Private constructor; Singleton class
-         */
+        /// Singleton instance constructor
         SystemController();
 
-        /**
-         * Makes the transition to the next mode
-         */
-        bool transitionToNextMode();
-
-        /**
-         * Testing
-         */
 #ifdef UNIT_TEST
         int test_value = 0;
 

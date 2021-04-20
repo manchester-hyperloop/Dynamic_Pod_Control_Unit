@@ -28,11 +28,23 @@ void setup()
   // Initialise the logger
   log_inst.init();
 
+  // TODO: the arduino mock lacks this definition, so we get test failures
+#ifndef UNIT_TEST
   attachInterrupt(digitalPinToInterrupt(HYPER_PIN_CAN_IRQ), can_isr, FALLING);
+#endif
 }
 
 void loop()
 {
+  Core::SystemController &controller = Core::SystemController::getInstance();
+
+  controller.init();
+
+  controller.run();
+
+  controller.finalise();
+
+  while (1);
 }
 
 void can_isr() {
