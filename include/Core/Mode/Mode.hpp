@@ -9,6 +9,7 @@
 #ifndef CORE_MODE_MODE_HPP
 #define CORE_MODE_MODE_HPP
 
+#include <stddef.h>
 #include <stdint.h>
 
 typedef uint8_t statemask_t;
