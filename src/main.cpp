@@ -12,10 +12,13 @@
 #include <Arduino_Mock.hpp>
 #endif
 
-// #include "Core/SystemController.hpp"
 #include <Log.hpp>
 
-// Core::SystemController &ctrl = Core::SystemController::getSysCtrlInstance();
+#include "Common/Wiring_Config.hpp"
+#include "Core/SystemController.hpp"
+
+volatile bool have_can_frame = false;
+void can_isr();
 
 void setup()
 {
@@ -24,11 +27,26 @@ void setup()
 
   // Initialise the logger
   log_inst.init();
-  LOG("Starting...");
 
-  // ctrl.init(nullptr);
+  // TODO: the arduino mock lacks this definition, so we get test failures
+#ifndef UNIT_TEST
+  attachInterrupt(digitalPinToInterrupt(HYPER_PIN_CAN_IRQ), can_isr, FALLING);
+#endif
 }
 
 void loop()
 {
+  Core::SystemController &controller = Core::SystemController::getInstance();
+
+  controller.init();
+
+  controller.run();
+
+  controller.finalise();
+
+  while (1);
+}
+
+void can_isr() {
+  have_can_frame = true;
 }

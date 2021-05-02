@@ -4,19 +4,20 @@
 #ifndef UNIT_TEST
 #include <Arduino.h>
 
-int getSeed()
+// Randomly generates a seed for the random number generator
+int generate_seed(uint8_t const analog_pin)
 {
-    // Run the seeding algo
     int seed = 0;
     int bit = 1;
 
     while (bit)
     {
-        byte a = analogRead(0);
+        byte a = analogRead(analog_pin);
         delay(1);
-        byte b = analogRead(0);
+        byte b = analogRead(analog_pin);
         delay(1);
 
+        // if the LSb are not the same
         if ((a & 1) != (b & 1))
         {
             if (a & 1)

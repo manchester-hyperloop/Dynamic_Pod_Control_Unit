@@ -6,11 +6,12 @@
 //  Copyright © 2020 Hyperloop Manchester. All rights reserved.
 //
 
-#include "ModeType.hpp"
-
 #include "Mode.hpp"
-// #include "ModeInitialise.hpp"
-// #include "ModeIdle.hpp"
+#include "ModeIdle.hpp"
+#include "ModeAccel.hpp"
+#include "ModeSteady.hpp"
+#include "ModeDecel.hpp"
+#include "ModePanic.hpp"
 
 #ifdef UNIT_TEST
 #include <Mode_Mock.hpp>
