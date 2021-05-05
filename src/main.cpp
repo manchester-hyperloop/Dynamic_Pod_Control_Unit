@@ -24,11 +24,13 @@ void setup()
 
   // Initialise the logger
   log_inst.init();
-  LOG("Starting...");
+  //LOG("Starting...");
 
   // ctrl.init(nullptr);
 }
 
 void loop()
 {
+  LOG("Starting...");
+  delay(100);
 }
