@@ -31,6 +31,6 @@ void setup()
 
 void loop()
 {
-  LOG("Starting...");
-  delay(100);
+  LOG_ERR("Error_Test");
+  LOG_WARN("Warning_Test");
 }
